@@ -1,0 +1,83 @@
+version: '3.7'
+services:
+  mysql_db:
+    container_name: mysql_db
+    image: mysql:5.7
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    expose:
+      - 3306
+    ports:
+      - 13306:3306
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: 'thisistherootpassowrd123asd456fgh'
+      MYSQL_USER: 'para'
+      MYSQL_PASSWORD: 'thisisnottherootpassword123asd'
+
+  # spring-cloud-config-server:
+  #   container_name: spring-cloud-config-server
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile-spring-cloud-config-server
+  #   image: spring-cloud-config-server:latest
+  #   expose:
+  #     - 8888
+  #   ports:
+  #     - 8888:8888
+  #   volumes:
+  #     - config-repo:/var/lib/config-repo
+
+  # netflix-eureka-naming-server:
+  #   container_name: netflix-eureka-naming-server
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile-netflix-eureka-naming-server
+  #   image: netflix-eureka-naming-server:latest
+  #   expose:
+  #     - 8761
+  #   ports:
+  #     - 8761:8761
+  #   links:
+  #     - spring-cloud-config-server:spring-cloud-config-server
+  #   depends_on:
+  #     - spring-cloud-config-server
+  #   logging:
+  #     driver: json-file
+  #   environment:
+  #     SPRING_CLOUD_CONFIG_URI: 'http://spring-cloud-config-server:8888'
+  #   command:
+  #     sh wait-for spring-cloud-config-server:8888 -- java -jar /opt/lib/eureka-naming-server-0.0.1-SNAPSHOT.jar
+
+  # zuul-api-gateway-server:
+  #   container_name: zuul-api-gateway-server
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile-zuul-api-gateway-server
+  #   image: zuul-api-gateway-server:latest
+  #   expose:
+  #     - 8765
+  #   ports:
+  #     - 8765:8765
+  #   networks:
+  #     - para-ett-network
+  #   links:
+  #     - spring-cloud-config-server:spring-cloud-config-server
+  #     - netflix-eureka-naming-server:netflix-eureka-naming-server
+  #     - mysql_db:mysql_db
+  #   depends_on:
+  #     - spring-cloud-config-server
+  #     - netflix-eureka-naming-server
+  #     - mysql_db
+  #   logging:
+  #     driver: json-file
+  #   environment:
+  #     SPRING_DATASOURCE_USERNAME: 'para'
+  #     SPRING_DATASOURCE_PASSWORD: 'thisisnottherootpassword123asd'
+
+# networks:
+#   para-ett-network:
+#     driver: bridge
+volumes:
+  config-repo:
+    external: true
