@@ -1,6 +1,5 @@
 FROM alpine-jdk:base
 MAINTAINER para-ett
 ADD wait-for /
-ADD test /
 COPY files/eureka-naming-server-0.0.1-SNAPSHOT.jar /opt/lib/
 EXPOSE 8761
