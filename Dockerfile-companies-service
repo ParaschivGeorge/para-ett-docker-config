@@ -1,6 +1,5 @@
 FROM alpine-jdk:base
 MAINTAINER para-ett
+ADD wait-for /
 COPY files/companies-service-0.0.1-SNAPSHOT /opt/lib/
-ENTRYPOINT ["/usr/bin/java"]
-CMD ["-jar", "/opt/lib/companies-service-0.0.1-SNAPSHOT"]
 EXPOSE 8000
