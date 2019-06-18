@@ -2,4 +2,5 @@ FROM alpine-jdk:base
 MAINTAINER para-ett
 ADD wait-for /
 COPY files/zuul-api-gateway-0.0.1-SNAPSHOT.jar /opt/lib/
+COPY files/baeldung.p12 /opt/lib/
 EXPOSE 8765
