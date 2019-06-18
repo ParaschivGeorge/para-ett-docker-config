@@ -59,14 +59,14 @@ services:
       - 8765
     ports:
       - 8765:8765
-    links:
-      - spring-cloud-config-server:spring-cloud-config-server
-      - netflix-eureka-naming-server:netflix-eureka-naming-server
-      - mysql_db:mysql_db
-    depends_on:
-      - spring-cloud-config-server
-      - netflix-eureka-naming-server
-      - mysql_db
+    # links:
+    #   - spring-cloud-config-server:spring-cloud-config-server
+    #   - netflix-eureka-naming-server:netflix-eureka-naming-server
+    #   - mysql_db:mysql_db
+    # depends_on:
+    #   - spring-cloud-config-server
+    #   - netflix-eureka-naming-server
+    #   - mysql_db
     logging:
       driver: json-file
     environment:
