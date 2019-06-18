@@ -1,53 +1,53 @@
 version: '3.7'
 services:
-  mysql_db:
-    container_name: mysql_db
-    image: mysql:5.7
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    expose:
-      - 3306
-    ports:
-      - 13306:3306
-    volumes:
-      - ./mysql:/docker-entrypoint-initdb.d
-    environment:
-      MYSQL_ROOT_PASSWORD: 'thisistherootpassowrd123asd456fgh'
-      MYSQL_USER: 'para'
-      MYSQL_PASSWORD: 'thisisnottherootpassword123asd'
+#   mysql_db:
+#     container_name: mysql_db
+#     image: mysql:5.7
+#     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+#     expose:
+#       - 3306
+#     ports:
+#       - 13306:3306
+#     volumes:
+#       - ./mysql:/docker-entrypoint-initdb.d
+#     environment:
+#       MYSQL_ROOT_PASSWORD: 'thisistherootpassowrd123asd456fgh'
+#       MYSQL_USER: 'para'
+#       MYSQL_PASSWORD: 'thisisnottherootpassword123asd'
 
-  spring-cloud-config-server:
-    container_name: spring-cloud-config-server
-    build:
-      context: .
-      dockerfile: Dockerfile-spring-cloud-config-server
-    image: spring-cloud-config-server:latest
-    expose:
-      - 8888
-    ports:
-      - 8888:8888
-    volumes:
-      - config-repo:/var/lib/config-repo
+#   spring-cloud-config-server:
+#     container_name: spring-cloud-config-server
+#     build:
+#       context: .
+#       dockerfile: Dockerfile-spring-cloud-config-server
+#     image: spring-cloud-config-server:latest
+#     expose:
+#       - 8888
+#     ports:
+#       - 8888:8888
+#     volumes:
+#       - config-repo:/var/lib/config-repo
 
-  netflix-eureka-naming-server:
-    container_name: netflix-eureka-naming-server
-    build:
-      context: .
-      dockerfile: Dockerfile-netflix-eureka-naming-server
-    image: netflix-eureka-naming-server:latest
-    expose:
-      - 8761
-    ports:
-      - 8761:8761
-    links:
-      - spring-cloud-config-server:spring-cloud-config-server
-    depends_on:
-      - spring-cloud-config-server
-    logging:
-      driver: json-file
-    environment:
-      SPRING_CLOUD_CONFIG_URI: 'http://spring-cloud-config-server:8888'
-    command:
-      sh wait-for spring-cloud-config-server:8888 -- java -jar /opt/lib/eureka-naming-server-0.0.1-SNAPSHOT.jar
+#   netflix-eureka-naming-server:
+#     container_name: netflix-eureka-naming-server
+#     build:
+#       context: .
+#       dockerfile: Dockerfile-netflix-eureka-naming-server
+#     image: netflix-eureka-naming-server:latest
+#     expose:
+#       - 8761
+#     ports:
+#       - 8761:8761
+#     links:
+#       - spring-cloud-config-server:spring-cloud-config-server
+#     depends_on:
+#       - spring-cloud-config-server
+#     logging:
+#       driver: json-file
+#     environment:
+#       SPRING_CLOUD_CONFIG_URI: 'http://spring-cloud-config-server:8888'
+#     command:
+#       sh wait-for spring-cloud-config-server:8888 -- java -jar /opt/lib/eureka-naming-server-0.0.1-SNAPSHOT.jar
 
   zuul-api-gateway-server:
     container_name: zuul-api-gateway-server
@@ -72,143 +72,144 @@ services:
     environment:
       SPRING_CLOUD_CONFIG_URI: 'http://spring-cloud-config-server:8888'
     command:
-      sh wait-for spring-cloud-config-server:8888 -- java -jar -Deureka.client.serviceUrl.defaultZone='http://netflix-eureka-naming-server:8761/eureka' -Dserver.ssl.key-store='/baeldung.p12' /opt/lib/zuul-api-gateway-0.0.1-SNAPSHOT.jar
+      ls /
+      # sh wait-for spring-cloud-config-server:8888 -- java -jar -Deureka.client.serviceUrl.defaultZone='http://netflix-eureka-naming-server:8761/eureka' -Dserver.ssl.key-store='/baeldung.p12' /opt/lib/zuul-api-gateway-0.0.1-SNAPSHOT.jar
 
-  companies-service:
-    container_name: companies-service
-    build:
-      context: .
-      dockerfile: Dockerfile-companies-service
-    image: companies-service:latest
-    expose:
-      - 8000
-    ports:
-      - 8000:8000
-    links:
-      - spring-cloud-config-server:spring-cloud-config-server
-      - netflix-eureka-naming-server:netflix-eureka-naming-server
-      - mysql_db:mysql_db
-      - zuul-api-gateway-server:zuul-api-gateway-server
-    depends_on:
-      - spring-cloud-config-server
-      - netflix-eureka-naming-server
-      - mysql_db
-      - zuul-api-gateway-server
-    logging:
-      driver: json-file
-    environment:
-      SPRING_CLOUD_CONFIG_URI: 'http://spring-cloud-config-server:8888'
-    command:
-      sh wait-for spring-cloud-config-server:8888 -- java -jar -Deureka.client.serviceUrl.defaultZone='http://netflix-eureka-naming-server:8761/eureka' /opt/lib/companies-service-0.0.1-SNAPSHOT.jar
+#   companies-service:
+#     container_name: companies-service
+#     build:
+#       context: .
+#       dockerfile: Dockerfile-companies-service
+#     image: companies-service:latest
+#     expose:
+#       - 8000
+#     ports:
+#       - 8000:8000
+#     links:
+#       - spring-cloud-config-server:spring-cloud-config-server
+#       - netflix-eureka-naming-server:netflix-eureka-naming-server
+#       - mysql_db:mysql_db
+#       - zuul-api-gateway-server:zuul-api-gateway-server
+#     depends_on:
+#       - spring-cloud-config-server
+#       - netflix-eureka-naming-server
+#       - mysql_db
+#       - zuul-api-gateway-server
+#     logging:
+#       driver: json-file
+#     environment:
+#       SPRING_CLOUD_CONFIG_URI: 'http://spring-cloud-config-server:8888'
+#     command:
+#       sh wait-for spring-cloud-config-server:8888 -- java -jar -Deureka.client.serviceUrl.defaultZone='http://netflix-eureka-naming-server:8761/eureka' /opt/lib/companies-service-0.0.1-SNAPSHOT.jar
 
-  users-service:
-    container_name: users-service
-    build:
-      context: .
-      dockerfile: Dockerfile-users-service
-    image: users-service:latest
-    expose:
-      - 8020
-    ports:
-      - 8020:8020
-    links:
-      - spring-cloud-config-server:spring-cloud-config-server
-      - netflix-eureka-naming-server:netflix-eureka-naming-server
-      - mysql_db:mysql_db
-      - zuul-api-gateway-server:zuul-api-gateway-server
-    depends_on:
-      - spring-cloud-config-server
-      - netflix-eureka-naming-server
-      - mysql_db
-      - zuul-api-gateway-server
-    logging:
-      driver: json-file
-    environment:
-      SPRING_CLOUD_CONFIG_URI: 'http://spring-cloud-config-server:8888'
-    command:
-      sh wait-for spring-cloud-config-server:8888 -- java -jar -Deureka.client.serviceUrl.defaultZone='http://netflix-eureka-naming-server:8761/eureka' /opt/lib/users-service-0.0.1-SNAPSHOT.jar
+#   users-service:
+#     container_name: users-service
+#     build:
+#       context: .
+#       dockerfile: Dockerfile-users-service
+#     image: users-service:latest
+#     expose:
+#       - 8020
+#     ports:
+#       - 8020:8020
+#     links:
+#       - spring-cloud-config-server:spring-cloud-config-server
+#       - netflix-eureka-naming-server:netflix-eureka-naming-server
+#       - mysql_db:mysql_db
+#       - zuul-api-gateway-server:zuul-api-gateway-server
+#     depends_on:
+#       - spring-cloud-config-server
+#       - netflix-eureka-naming-server
+#       - mysql_db
+#       - zuul-api-gateway-server
+#     logging:
+#       driver: json-file
+#     environment:
+#       SPRING_CLOUD_CONFIG_URI: 'http://spring-cloud-config-server:8888'
+#     command:
+#       sh wait-for spring-cloud-config-server:8888 -- java -jar -Deureka.client.serviceUrl.defaultZone='http://netflix-eureka-naming-server:8761/eureka' /opt/lib/users-service-0.0.1-SNAPSHOT.jar
 
-  free-days-service:
-    container_name: free-days-service
-    build:
-      context: .
-      dockerfile: Dockerfile-free-days-service
-    image: free-days-service:latest
-    expose:
-      - 8040
-    ports:
-      - 8040:8040
-    links:
-      - spring-cloud-config-server:spring-cloud-config-server
-      - netflix-eureka-naming-server:netflix-eureka-naming-server
-      - mysql_db:mysql_db
-      - zuul-api-gateway-server:zuul-api-gateway-server
-    depends_on:
-      - spring-cloud-config-server
-      - netflix-eureka-naming-server
-      - mysql_db
-      - zuul-api-gateway-server
-    logging:
-      driver: json-file
-    environment:
-      SPRING_CLOUD_CONFIG_URI: 'http://spring-cloud-config-server:8888'
-    command:
-      sh wait-for spring-cloud-config-server:8888 -- java -jar -Deureka.client.serviceUrl.defaultZone='http://netflix-eureka-naming-server:8761/eureka' /opt/lib/free-days-service-0.0.1-SNAPSHOT.jar
+#   free-days-service:
+#     container_name: free-days-service
+#     build:
+#       context: .
+#       dockerfile: Dockerfile-free-days-service
+#     image: free-days-service:latest
+#     expose:
+#       - 8040
+#     ports:
+#       - 8040:8040
+#     links:
+#       - spring-cloud-config-server:spring-cloud-config-server
+#       - netflix-eureka-naming-server:netflix-eureka-naming-server
+#       - mysql_db:mysql_db
+#       - zuul-api-gateway-server:zuul-api-gateway-server
+#     depends_on:
+#       - spring-cloud-config-server
+#       - netflix-eureka-naming-server
+#       - mysql_db
+#       - zuul-api-gateway-server
+#     logging:
+#       driver: json-file
+#     environment:
+#       SPRING_CLOUD_CONFIG_URI: 'http://spring-cloud-config-server:8888'
+#     command:
+#       sh wait-for spring-cloud-config-server:8888 -- java -jar -Deureka.client.serviceUrl.defaultZone='http://netflix-eureka-naming-server:8761/eureka' /opt/lib/free-days-service-0.0.1-SNAPSHOT.jar
 
-  requests-service:
-    container_name: requests-service
-    build:
-      context: .
-      dockerfile: Dockerfile-requests-service
-    image: requests-service:latest
-    expose:
-      - 8080
-    ports:
-      - 8080:8080
-    links:
-      - spring-cloud-config-server:spring-cloud-config-server
-      - netflix-eureka-naming-server:netflix-eureka-naming-server
-      - mysql_db:mysql_db
-      - zuul-api-gateway-server:zuul-api-gateway-server
-    depends_on:
-      - spring-cloud-config-server
-      - netflix-eureka-naming-server
-      - mysql_db
-      - zuul-api-gateway-server
-    logging:
-      driver: json-file
-    environment:
-      SPRING_CLOUD_CONFIG_URI: 'http://spring-cloud-config-server:8888'
-    command:
-      sh wait-for spring-cloud-config-server:8888 -- java -jar -Deureka.client.serviceUrl.defaultZone='http://netflix-eureka-naming-server:8761/eureka' /opt/lib/requests-service-0.0.1-SNAPSHOT.jar
+#   requests-service:
+#     container_name: requests-service
+#     build:
+#       context: .
+#       dockerfile: Dockerfile-requests-service
+#     image: requests-service:latest
+#     expose:
+#       - 8080
+#     ports:
+#       - 8080:8080
+#     links:
+#       - spring-cloud-config-server:spring-cloud-config-server
+#       - netflix-eureka-naming-server:netflix-eureka-naming-server
+#       - mysql_db:mysql_db
+#       - zuul-api-gateway-server:zuul-api-gateway-server
+#     depends_on:
+#       - spring-cloud-config-server
+#       - netflix-eureka-naming-server
+#       - mysql_db
+#       - zuul-api-gateway-server
+#     logging:
+#       driver: json-file
+#     environment:
+#       SPRING_CLOUD_CONFIG_URI: 'http://spring-cloud-config-server:8888'
+#     command:
+#       sh wait-for spring-cloud-config-server:8888 -- java -jar -Deureka.client.serviceUrl.defaultZone='http://netflix-eureka-naming-server:8761/eureka' /opt/lib/requests-service-0.0.1-SNAPSHOT.jar
 
-  timesheet-records-service:
-    container_name: timesheet-records-service
-    build:
-      context: .
-      dockerfile: Dockerfile-timesheet-records-service
-    image: timesheet-records-service:latest
-    expose:
-      - 8060
-    ports:
-      - 8060:8060
-    links:
-      - spring-cloud-config-server:spring-cloud-config-server
-      - netflix-eureka-naming-server:netflix-eureka-naming-server
-      - mysql_db:mysql_db
-      - zuul-api-gateway-server:zuul-api-gateway-server
-    depends_on:
-      - spring-cloud-config-server
-      - netflix-eureka-naming-server
-      - mysql_db
-      - zuul-api-gateway-server
-    logging:
-      driver: json-file
-    environment:
-      SPRING_CLOUD_CONFIG_URI: 'http://spring-cloud-config-server:8888'
-    command:
-      sh wait-for spring-cloud-config-server:8888 -- java -jar -Deureka.client.serviceUrl.defaultZone='http://netflix-eureka-naming-server:8761/eureka' /opt/lib/timesheet-records-service-0.0.1-SNAPSHOT.jar
+#   timesheet-records-service:
+#     container_name: timesheet-records-service
+#     build:
+#       context: .
+#       dockerfile: Dockerfile-timesheet-records-service
+#     image: timesheet-records-service:latest
+#     expose:
+#       - 8060
+#     ports:
+#       - 8060:8060
+#     links:
+#       - spring-cloud-config-server:spring-cloud-config-server
+#       - netflix-eureka-naming-server:netflix-eureka-naming-server
+#       - mysql_db:mysql_db
+#       - zuul-api-gateway-server:zuul-api-gateway-server
+#     depends_on:
+#       - spring-cloud-config-server
+#       - netflix-eureka-naming-server
+#       - mysql_db
+#       - zuul-api-gateway-server
+#     logging:
+#       driver: json-file
+#     environment:
+#       SPRING_CLOUD_CONFIG_URI: 'http://spring-cloud-config-server:8888'
+#     command:
+#       sh wait-for spring-cloud-config-server:8888 -- java -jar -Deureka.client.serviceUrl.defaultZone='http://netflix-eureka-naming-server:8761/eureka' /opt/lib/timesheet-records-service-0.0.1-SNAPSHOT.jar
 
-volumes:
-  config-repo:
-    external: true
+# volumes:
+#   config-repo:
+#     external: true
